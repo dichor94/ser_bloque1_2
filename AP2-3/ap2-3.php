@@ -29,7 +29,7 @@ class Singleton{
 
                 }
 
-                print "<strong>Conexión realizada correctamente a la base de datos " . self::$database . "</strong>";
+                print "<strong>Conexión realizada correctamente a la base de datos " . self::$database . "<br></strong>";
 
 
             }catch(Exception $e){
@@ -48,4 +48,38 @@ class Singleton{
 
 }
 
+//Ejemplo básico de función, se podría poner un control de errores
+function selectQuery($select){
+
+    $select = $select->query("SELECT * FROM usuarios");
+
+    if($select){
+
+        $select = $select->fetch_all(MYSQLI_ASSOC);
+
+        if(count($select) > 0){
+
+            foreach($select as $usuario){
+
+                print $usuario['id'] . " - " . $usuario['nombre'] . " " .$usuario['estado'] . "<br>";
+
+            }
+
+
+        }else{
+
+            print "No se encontraron resultados en la base de datos";
+
+
+        }
+
+    }
+}
+
+
+
+
 $connect = Singleton::getInstanceDb();
+$select = selectQuery($connect);
+
+
