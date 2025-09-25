@@ -6,45 +6,51 @@
 class Singleton{
 
     private static $instance = null;
-    private static $host = "servidor_db";
-    private static $username = "root";
-    private static $password = "root";
-    private static $database = "AP1";
+
+    private $connection ;
+    private  $host = "servidor_db";
+    private  $username = "root";
+    private  $password = "root";
+    private  $database = "AP1";
 
 
-    private function __construct(){} //Evitamos la instancia directa cuando se suele crear desde fuera un nuevo objeto;
+    private function __construct(){
 
-    public static function getInstanceDb(){
+        try{
 
-        if(self::$instance == null){
+            $this->connection = new mysqli($this->host, $this->username, $this->password, $this->database);
+            if(self::$instance->connect_errno){
 
-            try{
-
-                self::$instance = new mysqli(self::$host, self::$username, self::$password, self::$database);
-
-
-                if(self::$instance->connect_errno){
-
-                    throw new Exception("Fallo en la conexión a la BBDD " . self::$database . " - " . self::$instance->connect_error);
-
-                }
-
-                print "<strong>Conexión realizada correctamente a la base de datos " . self::$database . "<br></strong>";
-
-
-            }catch(Exception $e){
-
-                echo $e->getMessage();
-                die();
+                throw new Exception("Fallo en la conexión a la BBDD " . $this->database . " - " . self::$instance->connect_error);
 
             }
 
+            print "<strong>Conexión realizada correctamente a la base de datos " . $this->database . "<br></strong>";
+
+
+        }catch(Exception $e){
+
+            echo $e->getMessage();
+            die();
 
         }
 
-        return self::$instance; //Pongo el return al final para que no pare el código
 
     }
+
+    //Hago una función para hacer una nueva instancia
+    public static function getInstance(){
+
+        if(self::$instance == null){
+
+            self::$instance = new Singleton();
+
+        }
+
+        return self::getInstance();
+
+    }
+
 
 }
 
@@ -79,7 +85,9 @@ function selectQuery($select){
 
 
 
-$connect = Singleton::getInstanceDb();
-$select = selectQuery($connect);
+$connect1 = Singleton::getInstanceDb();
+$connect2 = Singleton::getInstanceDb();
+
+var_dump($connect1 === $connect2);
 
 
